@@ -1,3 +1,4 @@
+import { Application } from './components/Application'
 import { Header } from './components/Header'
 import { HowTattvaSees } from './components/HowTattvaSees'
 import { InsideMachine } from './components/InsideMachine'
@@ -15,6 +16,7 @@ function App() {
         <InsideMachine />
         <HowTattvaSees />
         <TheSystem />
+        <Application />
       </main>
     </>
   )

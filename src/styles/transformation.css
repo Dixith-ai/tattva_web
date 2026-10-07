@@ -1,0 +1,284 @@
+.transformation {
+  position: relative;
+  min-height: 220vh;
+  background: var(--bg);
+}
+
+.transformation-viewport {
+  --transformation-progress: 0;
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.transformation-kicker,
+.transformation-state-label,
+.transformation-annotation,
+.transformation-current-state,
+.transformation-bottom-label,
+.transformation-progress {
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.transformation-kicker {
+  position: absolute;
+  top: 32px;
+  left: 42px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  line-height: 1;
+}
+
+.transformation-kicker span {
+  width: 18px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.transformation-copy {
+  position: absolute;
+  top: 20%;
+  left: 42px;
+  z-index: 2;
+  width: min(500px, 42vw);
+}
+
+.transformation-copy h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(48px, 6vw, 92px);
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+}
+
+.transformation-copy p {
+  max-width: 390px;
+  margin: 26px 0 0;
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.transformation-stage {
+  position: absolute;
+  top: 10vh;
+  right: 4vw;
+  width: 65vw;
+  height: 80vh;
+  z-index: 1;
+}
+
+.transformation-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 55%;
+  display: grid;
+  width: 56%;
+  height: 48%;
+  place-items: center;
+  border: 1px solid rgba(242, 240, 234, 0.06);
+  color: var(--text-muted);
+  opacity: 0.64;
+  transform: translate(-50%, -50%) scaleX(0.82) scaleY(1.12);
+  transition: transform 420ms ease, opacity 320ms ease;
+}
+
+.transformation-placeholder::before,
+.transformation-placeholder::after {
+  position: absolute;
+  border: 1px solid rgba(242, 240, 234, 0.05);
+  content: "";
+  transition: inset 420ms ease, opacity 320ms ease;
+}
+
+.transformation-placeholder::before {
+  inset: 14%;
+}
+
+.transformation-placeholder::after {
+  inset: 29% 9%;
+  opacity: 0.55;
+}
+
+.transformation-placeholder span {
+  z-index: 1;
+  padding: 8px;
+  color: var(--text-muted);
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+.transformation-viewport[data-state="transforming"] .transformation-placeholder {
+  opacity: 0.78;
+  transform: translate(-50%, -50%) scale(0.94);
+}
+
+.transformation-viewport[data-state="transforming"] .transformation-placeholder::before {
+  inset: 20%;
+}
+
+.transformation-viewport[data-state="ground"] .transformation-placeholder {
+  opacity: 0.68;
+  transform: translate(-50%, -50%) scaleX(1.14) scaleY(0.72);
+}
+
+.transformation-viewport[data-state="ground"] .transformation-placeholder::before {
+  inset: 25% 12%;
+}
+
+.transformation-viewport[data-state="ground"] .transformation-placeholder::after {
+  inset: 34% 7%;
+}
+
+.transformation-state-label {
+  position: absolute;
+  top: 24%;
+  left: 15%;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition: opacity 280ms ease, transform 280ms ease;
+}
+
+.transformation-state-label strong {
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  line-height: 1;
+}
+
+.transformation-state-label span {
+  color: var(--text-muted);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  line-height: 1;
+}
+
+.transformation-viewport[data-state="aerial"] .transformation-state-label--aerial,
+.transformation-viewport[data-state="transforming"] .transformation-state-label--transforming,
+.transformation-viewport[data-state="ground"] .transformation-state-label--ground {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.transformation-annotation,
+.transformation-current-state {
+  position: absolute;
+  right: 6%;
+  color: var(--text-muted);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  line-height: 1;
+}
+
+.transformation-annotation {
+  bottom: 76px;
+}
+
+.transformation-current-state {
+  right: 6%;
+  bottom: 46px;
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.transformation-bottom-label {
+  position: absolute;
+  bottom: 28px;
+  left: 42px;
+  z-index: 2;
+  color: var(--text-muted);
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  line-height: 1;
+}
+
+.transformation-progress {
+  position: absolute;
+  top: 50%;
+  right: 28px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: 8px;
+  letter-spacing: 0;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.transformation-progress i {
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 140px;
+  overflow: hidden;
+  background: rgba(242, 240, 234, 0.12);
+}
+
+.transformation-progress b {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: block;
+  width: 1px;
+  height: 100%;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: bottom;
+}
+
+@media (max-width: 900px) {
+  .transformation { min-height: 200vh; }
+  .transformation-kicker { left: 24px; }
+  .transformation-copy { left: 24px; width: min(500px, 54vw); }
+  .transformation-copy h2 { font-size: clamp(44px, 8vw, 70px); }
+  .transformation-copy p { max-width: 330px; }
+  .transformation-stage { top: 14vh; right: 8vw; width: 70vw; height: 70vh; }
+  .transformation-progress { right: 18px; }
+  .transformation-bottom-label { left: 24px; }
+}
+
+@media (max-width: 640px) {
+  .transformation { min-height: 180vh; }
+  .transformation-kicker { top: 24px; left: 20px; }
+  .transformation-copy { top: 15%; left: 20px; width: min(300px, calc(100vw - 40px)); }
+  .transformation-copy h2 { font-size: clamp(42px, 13vw, 64px); }
+  .transformation-copy p { max-width: 300px; font-size: 13px; }
+  .transformation-stage { top: 38vh; right: auto; left: 5vw; width: 90vw; height: 48vh; opacity: 0.76; }
+  .transformation-placeholder { left: 53%; width: 74%; height: 58%; }
+  .transformation-state-label { top: 8%; left: 6%; }
+  .transformation-annotation { right: 6%; bottom: 62px; }
+  .transformation-current-state { right: 6%; bottom: 32px; font-size: 9px; }
+  .transformation-progress { right: 14px; }
+  .transformation-progress i { height: 100px; }
+  .transformation-bottom-label { bottom: 28px; left: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .transformation-placeholder,
+  .transformation-placeholder::before,
+  .transformation-placeholder::after,
+  .transformation-state-label {
+    transition: none;
+  }
+}

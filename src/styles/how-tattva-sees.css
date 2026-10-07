@@ -1,0 +1,314 @@
+.how-tattva-sees {
+  position: relative;
+  min-height: 360vh;
+  background: var(--bg);
+}
+
+.perception-viewport {
+  --perception-progress: 0;
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.perception-kicker,
+.perception-layer span,
+.perception-stage-state,
+.perception-stage-annotation,
+.perception-current-view,
+.perception-index,
+.perception-bottom-label,
+.perception-section-number {
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.perception-kicker {
+  position: absolute;
+  top: 32px;
+  left: 42px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  line-height: 1;
+}
+
+.perception-kicker span {
+  width: 18px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.perception-copy {
+  position: absolute;
+  top: 15%;
+  left: 42px;
+  z-index: 3;
+  width: min(560px, 42vw);
+}
+
+.perception-copy h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(48px, 6vw, 88px);
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 0.88;
+}
+
+.perception-copy p {
+  max-width: 410px;
+  margin: 26px 0 0;
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.perception-stage {
+  position: absolute;
+  top: 15vh;
+  right: 8vw;
+  width: 62vw;
+  height: 70vh;
+  z-index: 1;
+  border: 1px solid rgba(242, 240, 234, 0.08);
+}
+
+.perception-layer {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(242, 240, 234, 0.06);
+  color: var(--text-muted);
+  opacity: 0.12;
+  transition: opacity 500ms ease-out;
+}
+
+.perception-layer--rgb { inset: 9% 8%; }
+.perception-layer--depth { inset: 11% 10%; }
+.perception-layer--lidar { inset: 13% 12%; }
+.perception-layer--thermal { inset: 15% 14%; }
+.perception-layer--environment { inset: 17% 16%; }
+
+.perception-layer span {
+  padding: 8px;
+  color: var(--text-muted);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-align: center;
+}
+
+.perception-viewport[data-active-view="rgb"] .perception-layer--rgb,
+.perception-viewport[data-active-view="depth"] .perception-layer--depth,
+.perception-viewport[data-active-view="lidar"] .perception-layer--lidar,
+.perception-viewport[data-active-view="thermal"] .perception-layer--thermal,
+.perception-viewport[data-active-view="environment"] .perception-layer--environment {
+  border-color: rgba(242, 240, 234, 0.16);
+  opacity: 1;
+}
+
+.perception-stage-state {
+  position: absolute;
+  right: 5%;
+  bottom: 5%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+  text-align: right;
+}
+
+.perception-stage-state strong {
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  line-height: 1;
+}
+
+.perception-stage-state span,
+.perception-stage-state i {
+  color: var(--text-muted);
+  font-size: 9px;
+  font-style: normal;
+  letter-spacing: 0.12em;
+  line-height: 1;
+}
+
+.perception-stage-annotation {
+  position: absolute;
+  top: calc(85vh + 12px);
+  right: 8vw;
+  z-index: 2;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  line-height: 1;
+}
+
+.perception-current-view {
+  position: absolute;
+  bottom: 92px;
+  left: 42px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.perception-current-view span {
+  color: var(--text-muted);
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  line-height: 1;
+}
+
+.perception-current-view strong {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  line-height: 1;
+}
+
+.perception-index {
+  position: absolute;
+  top: 35%;
+  right: 52px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.perception-index span {
+  position: relative;
+  color: var(--text-muted);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  transition: color 250ms ease;
+  white-space: pre;
+}
+
+.perception-index span::before {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 9px);
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  content: "";
+  transition: width 250ms ease;
+}
+
+.perception-index .is-active {
+  color: var(--text-primary);
+}
+
+.perception-index .is-active::before {
+  width: 12px;
+}
+
+.perception-progress {
+  position: absolute;
+  top: 50%;
+  right: 28px;
+  z-index: 4;
+  transform: translateY(-50%);
+}
+
+.perception-progress i {
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 160px;
+  overflow: hidden;
+  background: rgba(242, 240, 234, 0.12);
+}
+
+.perception-progress b {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: block;
+  width: 1px;
+  height: 100%;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: bottom;
+}
+
+.perception-bottom-label,
+.perception-section-number {
+  position: absolute;
+  bottom: 28px;
+  z-index: 3;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 8px;
+  line-height: 1;
+}
+
+.perception-bottom-label {
+  left: 42px;
+  letter-spacing: 0.16em;
+}
+
+.perception-section-number {
+  right: 42px;
+  letter-spacing: 0.14em;
+}
+
+@media (max-width: 900px) {
+  .how-tattva-sees { min-height: 320vh; }
+  .perception-kicker { top: 24px; left: 24px; }
+  .perception-copy { top: 14%; left: 24px; width: min(460px, 48vw); }
+  .perception-copy h2 { font-size: clamp(42px, 8vw, 70px); }
+  .perception-stage { top: 18vh; right: 10vw; width: 68vw; height: 62vh; }
+  .perception-stage-annotation { top: calc(80vh + 12px); right: 10vw; }
+  .perception-index { right: 42px; }
+  .perception-index span { font-size: 8px; }
+  .perception-current-view { left: 24px; }
+  .perception-bottom-label { left: 24px; }
+  .perception-section-number { right: 24px; }
+}
+
+@media (max-width: 640px) {
+  .how-tattva-sees { min-height: 280vh; }
+  .perception-kicker { top: 20px; left: 20px; }
+  .perception-copy { top: 12%; left: 20px; width: min(320px, calc(100vw - 40px)); }
+  .perception-copy h2 { font-size: clamp(38px, 11vw, 58px); }
+  .perception-copy p { max-width: 310px; font-size: 13px; }
+  .perception-stage { top: 43vh; right: auto; left: 5vw; width: 90vw; height: 40vh; }
+  .perception-layer span { max-width: 90%; }
+  .perception-stage-state { right: 5%; bottom: 7%; }
+  .perception-stage-annotation { top: calc(83vh + 12px); right: 5vw; }
+  .perception-current-view { bottom: 72px; left: 20px; }
+  .perception-index { right: 42px; bottom: 72px; top: auto; gap: 0; }
+  .perception-index span { display: none; font-size: 8px; }
+  .perception-index .is-active { display: block; }
+  .perception-progress { right: 14px; }
+  .perception-progress i { height: 100px; }
+  .perception-bottom-label { bottom: 28px; left: 20px; }
+  .perception-section-number { right: 20px; bottom: 28px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .perception-layer,
+  .perception-index span,
+  .perception-index span::before {
+    transition: none;
+  }
+}

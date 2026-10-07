@@ -1,4 +1,5 @@
 import { Header } from './components/Header'
+import { FromPerceptionToUnderstanding } from './components/FromPerceptionToUnderstanding'
 import { HowTattvaSees } from './components/HowTattvaSees'
 import { InsideMachine } from './components/InsideMachine'
 import { Opening } from './components/Opening'
@@ -13,6 +14,7 @@ function App() {
         <Transformation />
         <InsideMachine />
         <HowTattvaSees />
+        <FromPerceptionToUnderstanding />
       </main>
     </>
   )

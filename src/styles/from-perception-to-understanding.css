@@ -1,0 +1,287 @@
+.perception-understanding {
+  position: relative;
+  min-height: 190vh;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.understanding-kicker,
+.understanding-layer span,
+.understanding-micro-copy,
+.understanding-pipeline,
+.understanding-bottom-label,
+.understanding-section-number {
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.understanding-kicker {
+  position: absolute;
+  top: 32px;
+  left: 42px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  line-height: 1;
+}
+
+.understanding-kicker span {
+  width: 18px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.understanding-copy {
+  position: absolute;
+  top: 14%;
+  left: 42px;
+  z-index: 2;
+  width: min(520px, 40vw);
+}
+
+.understanding-copy h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(48px, 6vw, 88px);
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 0.88;
+}
+
+.understanding-copy p {
+  max-width: 410px;
+  margin: 26px 0 0;
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.understanding-composition {
+  --signals-opacity: 1;
+  --geometry-opacity: 0;
+  --objects-opacity: 0;
+  --relationships-opacity: 0;
+  --environment-opacity: 0;
+  --context-opacity: 0;
+  --conclusion-opacity: 0;
+  position: absolute;
+  top: 18vh;
+  right: 5vw;
+  width: 62vw;
+  height: 68vh;
+  border: 1px solid rgba(242, 240, 234, 0.08);
+}
+
+.understanding-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms linear;
+}
+
+.understanding-layer span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  padding: 8px;
+  color: var(--text-muted);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.understanding-layer--signals { opacity: var(--signals-opacity); }
+.understanding-layer--geometry { opacity: var(--geometry-opacity); }
+.understanding-layer--objects { opacity: var(--objects-opacity); }
+.understanding-layer--relationships { opacity: var(--relationships-opacity); }
+.understanding-layer--environment { opacity: var(--environment-opacity); }
+
+.signal-mark,
+.object-mark {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border: 1px solid rgba(242, 240, 234, 0.2);
+}
+
+.signal-mark--one { top: 24%; left: 21%; }
+.signal-mark--two { top: 35%; left: 68%; }
+.signal-mark--three { top: 63%; left: 28%; }
+.signal-mark--four { top: 71%; left: 78%; }
+.signal-mark--five { top: 43%; left: 49%; }
+
+.geometry-mark,
+.relationship-mark,
+.environment-mark {
+  position: absolute;
+  display: block;
+  height: 1px;
+  background: rgba(242, 240, 234, 0.14);
+  transform-origin: left center;
+}
+
+.geometry-mark--one { top: 29%; left: 18%; width: 43%; transform: rotate(18deg); }
+.geometry-mark--two { top: 66%; left: 24%; width: 49%; transform: rotate(-13deg); }
+.geometry-mark--three { top: 44%; left: 42%; width: 32%; transform: rotate(72deg); }
+
+.object-mark {
+  width: 42px;
+  height: 28px;
+  border-color: rgba(242, 240, 234, 0.16);
+}
+
+.object-mark--one { top: 27%; left: 26%; }
+.object-mark--two { top: 54%; left: 58%; width: 34px; height: 34px; }
+.object-mark--three { top: 64%; left: 36%; width: 26px; height: 22px; }
+
+.relationship-mark--one { top: 35%; left: 29%; width: 34%; transform: rotate(24deg); }
+.relationship-mark--two { top: 61%; left: 37%; width: 29%; transform: rotate(-30deg); }
+.relationship-mark--three { top: 49%; left: 48%; width: 23%; transform: rotate(82deg); }
+
+.environment-mark--one {
+  top: 14%;
+  right: 13%;
+  bottom: 16%;
+  left: 13%;
+  width: auto;
+  height: auto;
+  border: 1px solid rgba(242, 240, 234, 0.1);
+  background: none;
+}
+
+.environment-mark--two { top: 75%; left: 19%; width: 59%; }
+
+.understanding-micro-copy {
+  position: absolute;
+  top: 7%;
+  right: 6%;
+  z-index: 2;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  line-height: 1;
+}
+
+.understanding-key-statement {
+  position: absolute;
+  top: 17%;
+  left: 7%;
+  z-index: 2;
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  opacity: var(--context-opacity);
+}
+
+.understanding-final-statement {
+  position: absolute;
+  right: 6%;
+  bottom: 7%;
+  z-index: 2;
+  max-width: 480px;
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(24px, 3vw, 42px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  opacity: var(--conclusion-opacity);
+  text-align: right;
+}
+
+.understanding-pipeline {
+  position: absolute;
+  top: 72vh;
+  left: 42px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 440px;
+  color: var(--text-muted);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+}
+
+.understanding-pipeline span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 220ms ease;
+}
+
+.understanding-pipeline .is-current {
+  color: var(--text-secondary);
+}
+
+.understanding-pipeline i {
+  color: var(--text-muted);
+  font-style: normal;
+}
+
+.understanding-bottom-label,
+.understanding-section-number {
+  position: absolute;
+  bottom: 28px;
+  z-index: 2;
+  margin: 0;
+  color: var(--text-muted);
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  line-height: 1;
+}
+
+.understanding-bottom-label { left: 42px; }
+.understanding-section-number { right: 42px; }
+
+@media (max-width: 900px) {
+  .perception-understanding { min-height: 180vh; }
+  .understanding-kicker { top: 24px; left: 24px; }
+  .understanding-copy { top: 13%; left: 24px; width: min(460px, 47vw); }
+  .understanding-copy h2 { font-size: clamp(42px, 8vw, 70px); }
+  .understanding-composition { top: 25vh; right: 4vw; width: 68vw; height: 58vh; }
+  .understanding-pipeline { top: 77vh; left: 24px; max-width: 350px; }
+  .understanding-bottom-label { left: 24px; }
+  .understanding-section-number { right: 24px; }
+}
+
+@media (max-width: 640px) {
+  .perception-understanding { min-height: 170vh; }
+  .understanding-kicker { top: 20px; left: 20px; }
+  .understanding-copy { top: 12%; left: 20px; width: min(320px, calc(100vw - 40px)); }
+  .understanding-copy h2 { font-size: clamp(38px, 11vw, 58px); }
+  .understanding-copy p { max-width: 310px; font-size: 13px; }
+  .understanding-composition { top: 43vh; right: auto; left: 5vw; width: 90vw; height: 45vh; }
+  .understanding-layer span { max-width: 90%; white-space: normal; }
+  .understanding-micro-copy { top: 6%; right: 5%; }
+  .understanding-key-statement { top: 15%; left: 5%; font-size: 10px; }
+  .understanding-final-statement { right: 5%; bottom: 6%; max-width: 78%; font-size: clamp(24px, 8vw, 32px); }
+  .understanding-pipeline { top: 90vh; left: 20px; max-width: calc(100vw - 40px); }
+  .understanding-bottom-label { bottom: 28px; left: 20px; max-width: 240px; }
+  .understanding-section-number { right: 20px; bottom: 28px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .understanding-layer,
+  .understanding-pipeline span {
+    transition: none;
+  }
+}

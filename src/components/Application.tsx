@@ -19,39 +19,46 @@ export function Application() {
       <p className="application-kicker"><span aria-hidden="true" />06 / APPLICATION</p>
 
       <div className="application-copy">
-        <h2 id="application-title">BUILT FOR THE<br />PLACES PEOPLE<br />SHOULDN&apos;T ENTER<br />FIRST.</h2>
-        <p>TATTVA surveys hazardous environments, identifies potential survivors and hazards, and helps responders decide where closer inspection is needed.</p>
+        <h2 id="application-title">BUILT FOR<br />THE<br />PLACES<br />PEOPLE<br />SHOULDN&apos;T<br />ENTER<br />FIRST.</h2>
+        <p>TATTVA surveys hazardous environments, identifies potential survivors and hazards, and helps responders assess where to go next.</p>
       </div>
 
-      <div className="application-scenario" data-application-scenario data-asset="tattva-application-scenario" data-stage={activeStage}>
-        <svg viewBox="0 0 860 500" role="img" aria-label="Interactive TATTVA application scenario">
-          <path className="scenario-boundary" d="M72 117 L210 73 L395 104 L510 58 L768 118 L724 385 L555 429 L364 387 L198 438 L91 344 Z" />
-          <path className="scenario-structure" d="M158 178 L293 136 L389 173 L356 274 L203 293 Z M468 143 L610 112 L684 191 L650 280 L499 265 Z M295 322 L434 290 L542 346 L489 402 L338 388 Z" />
-          <path className="scenario-survey-field" d="M124 129 L408 92 L676 154 L697 341 L498 397 L244 369 L111 291 Z" />
-          <path className="scenario-scan-line" d="M158 201 C302 164 451 169 658 216" />
-          <path className="scenario-route" d="M133 366 C252 331 341 329 432 300 S580 237 700 173" />
+      <div className="application-mission" data-application-scenario data-stage={activeStage}>
+        <div className="mission-view" aria-label="Interactive disaster-response mission scenario">
+          <svg viewBox="0 0 920 540" role="img" aria-label="TATTVA disaster-response mission view">
+            <path className="mission-perimeter" d="M58 86 H858 V452 H58 Z" />
+            <path className="mission-terrain mission-terrain--one" d="M85 139 C172 112 226 136 291 118 S422 88 501 118" />
+            <path className="mission-terrain mission-terrain--two" d="M472 423 C579 395 679 415 832 372" />
 
-          <g className="scenario-marker scenario-marker--candidate scenario-marker--candidate-one"><circle cx="333" cy="204" r="8" /><circle cx="333" cy="204" r="15" className="marker-ring" /></g>
-          <g className="scenario-marker scenario-marker--candidate scenario-marker--candidate-two"><circle cx="541" cy="231" r="8" /><circle cx="541" cy="231" r="15" className="marker-ring" /></g>
-          <g className="scenario-marker scenario-marker--hazard scenario-marker--hazard-one"><path d="M620 320 L631 339 L609 339 Z" /></g>
-          <g className="scenario-marker scenario-marker--hazard scenario-marker--hazard-two"><path d="M247 337 L258 356 L236 356 Z" /></g>
-          <g className="scenario-marker scenario-marker--target"><rect x="522" y="212" width="38" height="38" /><path d="M541 205 V257 M515 231 H567" /><rect x="507" y="197" width="68" height="68" className="target-boundary" /></g>
-          <g className="scenario-marker scenario-marker--priority"><path d="M690 157 L704 171 L690 185 L676 171 Z" /><path d="M690 145 V197 M664 171 H716" /></g>
+            <g className="mission-structure mission-structure--north"><path d="M136 159 H332 V246 H136 Z" /><path d="M164 183 H289 V224 H164 Z" /></g>
+            <g className="mission-structure mission-structure--east"><path d="M578 133 H794 V274 H578 Z" /><path d="M614 164 H754 V243 H614 Z" /></g>
+            <g className="mission-structure mission-structure--south"><path d="M304 336 H553 V416 H304 Z" /><path d="M345 361 H505 V393 H345 Z" /></g>
+            <g className="mission-debris"><path d="M365 284 L404 260 L440 284 L420 313 L379 311 Z" /><path d="M690 334 L722 309 L757 341 L733 371 L698 365 Z" /><path d="M205 319 L233 298 L268 325 L243 351 L214 346 Z" /></g>
 
-          <text className="scenario-asset-label" x="430" y="257" textAnchor="middle">[ TATTVA APPLICATION SCENARIO — ASSET PENDING ]</text>
-          <text className="scenario-annotation scenario-annotation--survey" x="117" y="109">AERIAL SURVEY</text>
-          <text className="scenario-annotation scenario-annotation--candidate" x="279" y="188">SURVIVOR CANDIDATE</text>
-          <text className="scenario-annotation scenario-annotation--hazard" x="604" y="362">HAZARD</text>
-          <text className="scenario-annotation scenario-annotation--target" x="492" y="284">INSPECTION TARGET</text>
-          <text className="scenario-annotation scenario-annotation--priority" x="654" y="138">PRIORITY</text>
-        </svg>
+            <g className="mission-platform"><circle cx="138" cy="388" r="9" /><path d="M119 388 H157 M138 369 V407" /><circle cx="138" cy="388" r="31" className="platform-scan" /></g>
+            <path className="mission-survey-boundary" d="M104 336 C205 275 341 255 442 278 S665 289 806 202" />
+            <path className="mission-survey-sweep" d="M119 349 A44 44 0 0 1 167 368" />
+            <path className="mission-route mission-route--inspection" d="M138 388 C237 370 351 350 454 298 S542 253 624 220" />
+            <path className="mission-route mission-route--priority" d="M624 220 C677 206 720 189 773 167" />
+
+            <g className="mission-marker mission-marker--survivor"><circle cx="624" cy="220" r="9" /><circle cx="624" cy="220" r="19" className="marker-ring" /></g>
+            <g className="mission-marker mission-marker--hazard"><path d="M712 328 L724 350 L700 350 Z" /></g>
+            <g className="mission-marker mission-marker--inspection"><rect x="601" y="197" width="46" height="46" /><path d="M624 188 V252 M592 220 H656" /><rect x="586" y="182" width="76" height="76" className="inspection-ring" /></g>
+            <g className="mission-marker mission-marker--priority"><path d="M773 146 L789 162 L773 178 L757 162 Z" /><path d="M773 136 V188 M747 162 H799" /></g>
+
+            <text className="mission-label mission-label--survey" x="104" y="322">AERIAL SURVEY</text>
+            <text className="mission-label mission-label--survivor" x="570" y="187">SURVIVOR CANDIDATE</text>
+            <text className="mission-label mission-label--hazard" x="681" y="375">HAZARD</text>
+            <text className="mission-label mission-label--inspection" x="559" y="278">INSPECTION TARGET</text>
+            <text className="mission-label mission-label--priority" x="730" y="122">PRIORITY</text>
+          </svg>
+        </div>
 
         <div className="application-stage-controls" aria-label="Application stages">
           {stages.map((stage) => (
             <button type="button" aria-label={stage.nav} aria-pressed={activeStage === stage.id} className={activeStage === stage.id ? 'is-active' : ''} onClick={() => setActiveStage(stage.id)} key={stage.id}>{stage.nav}</button>
           ))}
         </div>
-
         <div className="application-information" aria-live="polite"><strong>{activeContent.title}</strong><p>{activeContent.description}</p></div>
       </div>
 

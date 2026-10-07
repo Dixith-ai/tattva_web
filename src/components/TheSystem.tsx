@@ -49,9 +49,11 @@ const componentIdsByLayer = new Map(layers.map((layer) => [layer.id, components.
 const nodePositions: Record<ComponentId, [number, number, number]> = {
   rgb: [52, 103, 74], depth: [52, 160, 74], lidar: [52, 217, 74], thermal: [52, 274, 74], imu: [52, 331, 74], gps: [52, 388, 74],
   detection: [285, 138, 108], localization: [285, 231, 108], mapping: [285, 324, 108],
-  'environmental-representation': [506, 111, 164], 'spatial-understanding': [506, 231, 164], analysis: [506, 351, 164],
-  navigation: [778, 138, 116], inspection: [778, 231, 116], 'mission-decisions': [778, 324, 116],
+  'environmental-representation': [506, 111, 190], 'spatial-understanding': [506, 231, 190], analysis: [506, 351, 164],
+  navigation: [778, 138, 130], inspection: [778, 231, 130], 'mission-decisions': [778, 324, 150],
 }
+
+const linkKey = ([source, target]: [ComponentId, ComponentId]) => `${source}-${target}`
 
 function selectFromKeyboard(event: React.KeyboardEvent<SVGGElement>, callback: () => void) {
   if (event.key === 'Enter' || event.key === ' ') {
@@ -62,6 +64,7 @@ function selectFromKeyboard(event: React.KeyboardEvent<SVGGElement>, callback: (
 
 export function TheSystem() {
   const [selection, setSelection] = useState<SelectionId>(null)
+  const [pulseRun, setPulseRun] = useState(0)
 
   const selectionDetails = useMemo(() => {
     if (!selection) return { label: 'SYSTEM ARCHITECTURE', description: 'Select a system layer or component to inspect its role.' }
@@ -75,26 +78,66 @@ export function TheSystem() {
     return new Set([selection as ComponentId])
   }, [selection])
 
+  const pulseLevels = useMemo(() => {
+    const levels = new Map<string, number>()
+    if (!selection) return levels
+
+    const queue = [...selectedComponents].map((id) => ({ id, level: 0 }))
+    const visited = new Map<ComponentId, number>(queue.map(({ id, level }) => [id, level]))
+
+    while (queue.length) {
+      const current = queue.shift()
+      if (!current) continue
+      links.forEach((link) => {
+        const [source, target] = link
+        if (source !== current.id) return
+        levels.set(linkKey(link), current.level)
+        const knownLevel = visited.get(target)
+        if (knownLevel === undefined || current.level + 1 < knownLevel) {
+          visited.set(target, current.level + 1)
+          queue.push({ id: target, level: current.level + 1 })
+        }
+      })
+    }
+
+    return levels
+  }, [selectedComponents, selection])
+
+  const highlightedLinks = useMemo(() => {
+    const highlighted = new Set(pulseLevels.keys())
+    if (!selection) return highlighted
+
+    links.forEach((link) => {
+      const [source, target] = link
+      if (selectedComponents.has(source) || selectedComponents.has(target)) highlighted.add(linkKey(link))
+    })
+
+    return highlighted
+  }, [pulseLevels, selectedComponents, selection])
+
   const connectedComponents = useMemo(() => {
     const connected = new Set<ComponentId>()
     if (!selection) return connected
     links.forEach(([source, target]) => {
-      if (selectedComponents.has(source)) connected.add(target)
-      if (selectedComponents.has(target)) connected.add(source)
+      if (highlightedLinks.has(linkKey([source, target]))) {
+        connected.add(source)
+        connected.add(target)
+      }
     })
     return connected
-  }, [selectedComponents, selection])
+  }, [highlightedLinks, selection])
 
-  const choose = (id: SelectionId) => setSelection((current) => current === id ? null : id)
+  const choose = (id: SelectionId) => {
+    setSelection((current) => current === id ? null : id)
+    setPulseRun((run) => run + 1)
+  }
   const nodeState = (id: ComponentId) => {
     if (!selection) return 'is-idle'
     if (selectedComponents.has(id)) return 'is-selected'
     if (connectedComponents.has(id)) return 'is-connected'
     return 'is-subdued'
   }
-  const linkState = ([source, target]: [ComponentId, ComponentId]) => (
-    selection && (selectedComponents.has(source) || selectedComponents.has(target)) ? 'is-highlighted' : selection ? 'is-subdued' : 'is-idle'
-  )
+  const linkState = (link: [ComponentId, ComponentId]) => (selection && highlightedLinks.has(linkKey(link)) ? 'is-highlighted' : selection ? 'is-subdued' : 'is-idle')
 
   return (
     <section className="the-system" id="the-system" aria-labelledby="the-system-title">
@@ -109,7 +152,7 @@ export function TheSystem() {
           <rect className="architecture-background" width="940" height="500" />
           {layers.map((layer, index) => {
             const groupX = [25, 258, 479, 751][index]
-            const groupWidth = [126, 162, 184, 143][index]
+            const groupWidth = [126, 162, 184, 177][index]
             const active = selection === layer.id
             return (
               <g className={`architecture-group ${active ? 'is-selected' : selection ? 'is-subdued' : ''}`} key={layer.id}>
@@ -121,26 +164,33 @@ export function TheSystem() {
             )
           })}
           <path className="architecture-flow" d="M151 81 H285 M447 81 H506 M670 81 H778" />
-          {links.map(([source, target]) => {
+          {links.map(([source, target], index) => {
             const [sourceX, sourceY, sourceWidth] = nodePositions[source]
             const [targetX, targetY] = nodePositions[target]
-            return <path className={`architecture-link ${linkState([source, target])}`} d={`M ${sourceX + sourceWidth} ${sourceY + 17} C ${(sourceX + sourceWidth + targetX) / 2} ${sourceY + 17}, ${(sourceX + sourceWidth + targetX) / 2} ${targetY + 17}, ${targetX} ${targetY + 17}`} key={`${source}-${target}`} />
+            const pathData = `M ${sourceX + sourceWidth} ${sourceY + 19} C ${(sourceX + sourceWidth + targetX) / 2} ${sourceY + 19}, ${(sourceX + sourceWidth + targetX) / 2} ${targetY + 19}, ${targetX} ${targetY + 19}`
+            const level = pulseLevels.get(linkKey([source, target]))
+            return (
+              <g key={linkKey([source, target])}>
+                <path className={`architecture-link ${linkState([source, target])}`} d={pathData} />
+                {level !== undefined && <path className="architecture-pulse" d={pathData} pathLength="1" style={{ animationDelay: `${level * 160 + (selectedComponents.size > 1 ? (index % 3) * 80 : 0)}ms` }} key={`${linkKey([source, target])}-${pulseRun}`} />}
+              </g>
+            )
           })}
           {components.map((component) => {
             const [x, y, width] = nodePositions[component.id as ComponentId]
             const active = selection === component.id
             return (
               <g className={`architecture-node ${nodeState(component.id as ComponentId)}`} role="button" tabIndex={0} aria-label={component.label} aria-pressed={active} transform={`translate(${x} ${y})`} key={component.id} onClick={(event) => { event.stopPropagation(); choose(component.id as ComponentId) }} onKeyDown={(event) => selectFromKeyboard(event, () => choose(component.id as ComponentId))}>
-                <rect width={width} height="34" />
-                <text x="9" y="21">{component.label}</text>
+                <rect width={width} height="38" />
+                <text x="10" y="24">{component.label}</text>
               </g>
             )
           })}
         </svg>
 
-        <div className="system-architecture__mobile">
+        <div className="system-architecture__mobile" data-has-selection={Boolean(selection)}>
           {layers.map((layer) => (
-            <div className={`mobile-system-group ${selection === layer.id ? 'is-selected' : selection ? 'is-subdued' : ''}`} key={layer.id}>
+            <div className={`mobile-system-group ${selection === layer.id ? 'is-selected' : selection ? 'is-subdued' : ''} ${selection && components.some((component) => component.layer === layer.id && (selectedComponents.has(component.id as ComponentId) || connectedComponents.has(component.id as ComponentId))) ? 'is-flow-active' : ''}`} key={layer.id}>
               <button type="button" className="mobile-system-layer" aria-pressed={selection === layer.id} onClick={() => choose(layer.id)}>{layer.label}</button>
               <div className="mobile-system-components">
                 {components.filter((component) => component.layer === layer.id).map((component) => (
@@ -152,7 +202,7 @@ export function TheSystem() {
         </div>
       </div>
 
-      <div className="system-information" aria-live="polite"><strong>{selectionDetails.label}</strong><p>{selectionDetails.description}</p><button type="button" onClick={() => setSelection(null)} disabled={!selection}>CLEAR SELECTION</button></div>
+      <div className="system-information" aria-live="polite"><strong>{selectionDetails.label}</strong><p>{selectionDetails.description}</p><button type="button" onClick={() => choose(null)} disabled={!selection}>CLEAR SELECTION</button></div>
       <p className="system-bottom-label">SYSTEM / ARCHITECTURE</p>
       <p className="system-section-number">05 / 06</p>
     </section>

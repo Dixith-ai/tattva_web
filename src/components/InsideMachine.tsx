@@ -1,24 +1,76 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import type { InsideMachineVisualState } from './InsideMachineCad'
 import '../styles/inside-machine.css'
 
-type SystemKey = 'outer' | 'compute' | 'control' | 'sensing' | 'transformation' | 'propulsion'
+const InsideMachineCad = lazy(() => import('./InsideMachineCad').then(({ InsideMachineCad: Cad }) => ({ default: Cad })))
+
+type SystemKey = InsideMachineVisualState
 
 type SystemState = {
   key: SystemKey
   indexLabel: string
-  title: string
-  detail: string
   callout: string
+  subsystemLabel: string
+  subsystemDetails: string[]
+  image?: string
 }
 
 const systems: SystemState[] = [
-  { key: 'outer', indexLabel: '01  OUTER PLATFORM', title: 'OUTER PLATFORM', detail: 'STRUCTURE / MOBILITY', callout: 'STRUCTURE' },
-  { key: 'compute', indexLabel: '02  COMPUTE', title: 'COMPUTE', detail: 'ONBOARD INTELLIGENCE', callout: 'COMPUTE' },
-  { key: 'control', indexLabel: '03  FLIGHT CONTROL', title: 'FLIGHT CONTROL', detail: 'LOW-LEVEL MOTION CONTROL', callout: 'CONTROL' },
-  { key: 'sensing', indexLabel: '04  SENSING', title: 'SENSING', detail: 'PERCEPTION / SPATIAL INPUT', callout: 'PERCEPTION' },
-  { key: 'transformation', indexLabel: '05  TRANSFORMATION', title: 'TRANSFORMATION', detail: 'AIR ↔ GROUND RECONFIGURATION', callout: 'ACTUATION' },
-  { key: 'propulsion', indexLabel: '06  PROPULSION', title: 'PROPULSION', detail: 'FLIGHT / GROUND MOBILITY', callout: 'PROPULSION' },
+  {
+    key: 'outer', indexLabel: '01  OUTER PLATFORM', callout: 'STRUCTURE',
+    subsystemLabel: '01 / OUTER PLATFORM', subsystemDetails: ['STRUCTURE / MOBILITY'],
+  },
+  {
+    key: 'compute', indexLabel: '02  COMPUTE', callout: 'COMPUTE',
+    subsystemLabel: '02 / COMPUTE', subsystemDetails: ['ONBOARD COMPUTE', 'EDGE AI', 'SENSOR FUSION', 'REAL-TIME INFERENCE'], image: '/images/machine/computational.png',
+  },
+  {
+    key: 'control', indexLabel: '03  FLIGHT CONTROL', callout: 'CONTROL',
+    subsystemLabel: '03 / FLIGHT CONTROL', subsystemDetails: ['HOLYBRO PIXHAWK 6C', 'LOW-LEVEL FLIGHT CONTROL', 'MOTOR / ESC EXECUTION'], image: '/images/machine/pixhawk-flight-controller.png',
+  },
+  {
+    key: 'sensing', indexLabel: '04  SENSING', callout: 'PERCEPTION',
+    subsystemLabel: '04 / SENSING', subsystemDetails: ['MULTI-SENSOR INPUT', 'eMEET C950', 'RGB VISUAL INPUT', 'RPLIDAR A1M8', '2D SPATIAL SENSING'], image: '/images/machine/camera-lidar.png',
+  },
+  {
+    key: 'transformation', indexLabel: '05  TRANSFORMATION', callout: 'ACTUATION',
+    subsystemLabel: '05 / TRANSFORMATION', subsystemDetails: ['MECHANICAL TRANSFORMATION', 'ROTATIONAL ACTUATION', 'CONFIGURATION CHANGE'],
+  },
+  {
+    key: 'propulsion', indexLabel: '06  PROPULSION', callout: 'PROPULSION',
+    subsystemLabel: '06 / PROPULSION', subsystemDetails: ['PROPULSION SYSTEM', 'BLDC MOTOR', 'ELECTRONIC SPEED CONTROL'], image: '/images/machine/bldc-esc.png',
+  },
 ]
+
+const visualWindows: Record<SystemKey, [number, number, number, number]> = {
+  outer: [0, 0, 0.18, 0.3],
+  compute: [0.12, 0.24, 0.36, 0.48],
+  control: [0.3, 0.42, 0.54, 0.66],
+  sensing: [0.48, 0.6, 0.72, 0.84],
+  transformation: [0.66, 0.76, 0.86, 0.96],
+  propulsion: [0.82, 0.92, 1, 1],
+}
+
+const visualMotion: Record<SystemKey, { x: number; y: number; rotation: number; scale: number }> = {
+  outer: { x: -42, y: 18, rotation: -8, scale: 0.86 },
+  compute: { x: 56, y: -28, rotation: 5, scale: 0.82 },
+  control: { x: -48, y: 32, rotation: -6, scale: 0.84 },
+  sensing: { x: 52, y: 18, rotation: 5, scale: 0.82 },
+  transformation: { x: -38, y: -26, rotation: -4, scale: 0.88 },
+  propulsion: { x: 46, y: 18, rotation: 6, scale: 0.84 },
+}
+
+function clamp(value: number) {
+  return Math.min(Math.max(value, 0), 1)
+}
+
+function getVisualOpacity(progress: number, key: SystemKey) {
+  const [enterStart, enterEnd, exitStart, exitEnd] = visualWindows[key]
+  if (progress < enterStart || progress > exitEnd) return 0
+  if (progress < enterEnd) return clamp((progress - enterStart) / Math.max(enterEnd - enterStart, 0.001))
+  if (progress > exitStart) return 1 - clamp((progress - exitStart) / Math.max(exitEnd - exitStart, 0.001))
+  return 1
+}
 
 function getActiveSystem(progress: number): SystemState {
   if (progress < 0.18) return systems[0]
@@ -32,6 +84,8 @@ function getActiveSystem(progress: number): SystemState {
 export function InsideMachine() {
   const sectionRef = useRef<HTMLElement>(null)
   const viewportRef = useRef<HTMLDivElement>(null)
+  const stageRef = useRef<HTMLDivElement>(null)
+  const progressRef = useRef(0)
   const [activeSystem, setActiveSystem] = useState<SystemState>(systems[0])
 
   useEffect(() => {
@@ -47,8 +101,32 @@ export function InsideMachine() {
       const rect = section.getBoundingClientRect()
       const scrollDistance = Math.max(section.offsetHeight - window.innerHeight, 1)
       const progress = Math.min(Math.max(-rect.top / scrollDistance, 0), 1)
+      progressRef.current = progress
 
       viewport.style.setProperty('--inside-machine-progress', progress.toFixed(4))
+      stageRef.current?.style.setProperty('--inside-machine-progress', progress.toFixed(4))
+
+      systems.forEach((system) => {
+        const element = stageRef.current?.querySelector<HTMLElement>(`[data-visual-system="${system.key}"]`)
+        if (!element) return
+
+        const opacity = getVisualOpacity(progress, system.key)
+        const [enterStart, enterEnd, exitStart, exitEnd] = visualWindows[system.key]
+        const entering = progress < enterEnd
+          ? 1 - clamp((progress - enterStart) / Math.max(enterEnd - enterStart, 0.001))
+          : 0
+        const exiting = progress > exitStart
+          ? clamp((progress - exitStart) / Math.max(exitEnd - exitStart, 0.001))
+          : 0
+        const motion = visualMotion[system.key]
+        const travel = entering - exiting
+
+        element.style.setProperty('--visual-opacity', opacity.toFixed(4))
+        element.style.setProperty('--visual-x', `${(travel * motion.x).toFixed(2)}px`)
+        element.style.setProperty('--visual-y', `${(travel * motion.y).toFixed(2)}px`)
+        element.style.setProperty('--visual-rotate', `${(travel * motion.rotation).toFixed(2)}deg`)
+        element.style.setProperty('--visual-scale', (1 - ((1 - opacity) * (1 - motion.scale))).toFixed(4))
+      })
       const nextSystem = getActiveSystem(progress)
       setActiveSystem((currentSystem) => (
         currentSystem.key === nextSystem.key ? currentSystem : nextSystem
@@ -83,36 +161,34 @@ export function InsideMachine() {
           <p>Flight control, onboard computation, sensing, actuation and propulsion work together as one system.</p>
         </div>
 
-        <div className="inside-machine-stage" data-asset="tattva-exploded-view" aria-label="TATTVA exploded view asset pending">
-          {/* TODO: Replace placeholder with final TATTVA exploded CAD/model asset. */}
-          <div className="inside-layer inside-layer--outer" aria-hidden="true" />
-          <div className="inside-layer inside-layer--compute" data-asset="tattva-compute" aria-hidden="true" />
-          <div className="inside-layer inside-layer--control" data-asset="tattva-flight-controller" aria-hidden="true" />
-          <div className="inside-layer inside-layer--sensing" data-asset="tattva-sensing" aria-hidden="true" />
-          <div className="inside-layer inside-layer--motion" aria-hidden="true">
-            <span data-asset="tattva-transformation" />
-            <span data-asset="tattva-propulsion" />
-          </div>
+        <div className="inside-machine-stage" data-asset="tattva-exploded-view" aria-label="TATTVA internal systems" ref={stageRef}>
+          <Suspense fallback={null}>
+            <InsideMachineCad progressRef={progressRef} />
+          </Suspense>
 
-          <p className="inside-machine-asset-label">[ TATTVA EXPLODED VIEW — ASSET PENDING ]</p>
-
-          <div className="inside-sensor-labels" aria-hidden="true">
-            <span>RGB</span>
-            <span>THERMAL</span>
-            <span>LiDAR</span>
-            <span>IMU</span>
-            <span>GPS</span>
-          </div>
+          {systems.filter((system) => system.image).map((system) => (
+            <img
+              className={`inside-machine-image inside-machine-image--${system.key}`}
+              data-asset={`tattva-${system.key}`}
+              data-visual-system={system.key}
+              src={system.image}
+              alt=""
+              key={system.key}
+            />
+          ))}
 
           {systems.map((system) => (
-            <p className={`inside-callout inside-callout--${system.key}`} key={system.key}>
+            <p className={`inside-callout inside-callout--${system.key}`} data-visual-system={system.key} key={system.key}>
               {system.callout}
             </p>
           ))}
 
           <div className="inside-active-system" aria-live="polite">
-            <strong>{activeSystem.title}</strong>
-            <span>{activeSystem.detail}</span>
+            <span>{activeSystem.subsystemLabel}</span>
+            <strong>{activeSystem.subsystemDetails[0]}</strong>
+            <div>
+              {activeSystem.subsystemDetails.slice(1).map((detail) => <span key={detail}>{detail}</span>)}
+            </div>
           </div>
         </div>
 

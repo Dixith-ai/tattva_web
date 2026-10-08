@@ -4,7 +4,9 @@ import {
   Color,
   DirectionalLight,
   Group,
+  HemisphereLight,
   MathUtils,
+  MeshStandardMaterial,
   PerspectiveCamera,
   Scene,
   Vector3,
@@ -20,6 +22,8 @@ type ModelRecord = {
   path: string
   focus: Vector3
   distance: number
+  cameraDirection: Vector3
+  cameraUp: Vector3
 }
 
 type ModelBlend = {
@@ -29,29 +33,34 @@ type ModelBlend = {
 }
 
 const ASSEMBLY_SCALE = 3.7 / 526.17626953125
-const PRESENTATION_ROTATION_X = MathUtils.degToRad(-8)
-const PRESENTATION_ROTATION_Y = MathUtils.degToRad(-30)
-
 const modelRecords: Record<TransformationModelState, ModelRecord> = {
   aerial: {
     path: '/models/TATTVA_Aerial.glb',
     focus: new Vector3(0, 0, 23.75 * ASSEMBLY_SCALE),
-    distance: 9.25,
+    distance: 8.65,
+    cameraDirection: new Vector3(0.08, -0.16, 1).normalize(),
+    cameraUp: new Vector3(0, 1, 0),
   },
   mechanism: {
     path: '/models/TATTVA_Mechanism.glb',
     focus: new Vector3(0, 0, 21.25 * ASSEMBLY_SCALE),
-    distance: 3.15,
+    distance: 2,
+    cameraDirection: new Vector3(0.12, -0.28, 1).normalize(),
+    cameraUp: new Vector3(0, 1, 0),
   },
   transforming: {
     path: '/models/TATTVA_Transforming.glb',
     focus: new Vector3(0, 79.06061553955078 * ASSEMBLY_SCALE, -66.64125061035156 * ASSEMBLY_SCALE),
-    distance: 8.35,
+    distance: 8.2,
+    cameraDirection: new Vector3(0.08, -1, 0.12).normalize(),
+    cameraUp: new Vector3(0, 0, 1),
   },
   ground: {
     path: '/models/TATTVA_Ground.glb',
     focus: new Vector3(0, -0.0004730224609375 * ASSEMBLY_SCALE, -66.64132690429688 * ASSEMBLY_SCALE),
-    distance: 7.55,
+    distance: 7.3,
+    cameraDirection: new Vector3(0.08, -1, 0.12).normalize(),
+    cameraUp: new Vector3(0, 0, 1),
   },
 }
 
@@ -100,6 +109,22 @@ function disposeModel(model: Group) {
   })
 }
 
+function applyPresentationMaterial(model: Group) {
+  model.traverse((object) => {
+    const mesh = object as Mesh
+    if (!mesh.isMesh) return
+
+    const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
+    materials.forEach((material) => {
+      const presentationMaterial = material as MeshStandardMaterial
+      presentationMaterial.color.setHex(0x5b6365)
+      presentationMaterial.metalness = 0.34
+      presentationMaterial.roughness = 0.44
+      presentationMaterial.needsUpdate = true
+    })
+  })
+}
+
 export function TattvaTransformationModel({ progressRef }: { progressRef: MutableRefObject<number> }) {
   const stageRef = useRef<HTMLDivElement>(null)
   const [isLoaded, setIsLoaded] = useState(false)
@@ -114,9 +139,10 @@ export function TattvaTransformationModel({ progressRef }: { progressRef: Mutabl
     const assembly = new Group()
     const loader = new GLTFLoader()
     const models = new Map<TransformationModelState, Group>()
-    const cameraDirection = new Vector3(0.76, 0.5, 1).normalize()
     const currentFocus = new Vector3()
     const nextFocus = new Vector3()
+    const nextCameraDirection = new Vector3()
+    const nextCameraUp = new Vector3()
     const targetCameraPosition = new Vector3()
     const worldFocus = new Vector3()
     let frameId = 0
@@ -129,17 +155,22 @@ export function TattvaTransformationModel({ progressRef }: { progressRef: Mutabl
     renderer.domElement.style.pointerEvents = 'none'
     stage.appendChild(renderer.domElement)
 
-    assembly.rotation.set(PRESENTATION_ROTATION_X, PRESENTATION_ROTATION_Y, 0)
+    assembly.rotation.set(0, 0, 0)
     scene.add(assembly)
-    scene.add(new AmbientLight(0xf2f0ea, 1.45))
+    scene.add(new AmbientLight(0xd7d7d1, 0.54))
+    scene.add(new HemisphereLight(0xdedfd9, 0x20211f, 0.74))
 
-    const keyLight = new DirectionalLight(0xf2f0ea, 2.15)
-    keyLight.position.set(6, 7, 8)
+    const keyLight = new DirectionalLight(0xf2f0ea, 2)
+    keyLight.position.set(5, 7, 8)
     scene.add(keyLight)
 
-    const fillLight = new DirectionalLight(0xc97932, 0.35)
-    fillLight.position.set(-6, 3, -5)
+    const fillLight = new DirectionalLight(0xc8cbc8, 0.5)
+    fillLight.position.set(-5, 2, 5)
     scene.add(fillLight)
+
+    const rimLight = new DirectionalLight(0xb7b9b4, 0.9)
+    rimLight.position.set(-6, 5, -6)
+    scene.add(rimLight)
 
     const updateSize = () => {
       const { clientWidth, clientHeight } = stage
@@ -166,6 +197,7 @@ export function TattvaTransformationModel({ progressRef }: { progressRef: Mutabl
 
           const model = gltf.scene
           model.scale.setScalar(ASSEMBLY_SCALE)
+          applyPresentationMaterial(model)
           setModelOpacity(model, 0)
           assembly.add(model)
           models.set(state, model)
@@ -198,11 +230,14 @@ export function TattvaTransformationModel({ progressRef }: { progressRef: Mutabl
       })
 
       nextFocus.copy(fromRecord.focus).lerp(toRecord.focus, blend.amount)
+      nextCameraDirection.copy(fromRecord.cameraDirection).lerp(toRecord.cameraDirection, blend.amount).normalize()
+      nextCameraUp.copy(fromRecord.cameraUp).lerp(toRecord.cameraUp, blend.amount).normalize()
       const nextDistance = MathUtils.lerp(fromRecord.distance, toRecord.distance, blend.amount)
       assembly.localToWorld(worldFocus.copy(nextFocus))
-      targetCameraPosition.copy(worldFocus).addScaledVector(cameraDirection, nextDistance)
+      targetCameraPosition.copy(worldFocus).addScaledVector(nextCameraDirection, nextDistance)
       camera.position.lerp(targetCameraPosition, 0.12)
       currentFocus.lerp(worldFocus, 0.12)
+      camera.up.copy(nextCameraUp)
       camera.lookAt(currentFocus)
       renderer.render(scene, camera)
     }

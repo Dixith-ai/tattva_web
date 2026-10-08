@@ -14,7 +14,6 @@
 }
 
 .perception-kicker,
-.perception-layer span,
 .perception-stage-state,
 .perception-stage-annotation,
 .perception-current-view,
@@ -75,57 +74,100 @@
 .perception-stage {
   position: absolute;
   top: 15vh;
-  right: 8vw;
-  width: 62vw;
+  right: 13vw;
+  width: 47vw;
   height: 70vh;
   z-index: 1;
+  overflow: hidden;
   border: 1px solid rgba(242, 240, 234, 0.08);
+  background: #0f0f0d;
+}
+
+.perception-stage::before,
+.perception-stage::after {
+  position: absolute;
+  z-index: 3;
+  width: 14%;
+  height: 14%;
+  pointer-events: none;
+  content: "";
+}
+
+.perception-stage::before {
+  top: 14px;
+  left: 14px;
+  border-top: 1px solid rgba(242, 240, 234, 0.18);
+  border-left: 1px solid rgba(242, 240, 234, 0.18);
+}
+
+.perception-stage::after {
+  right: 14px;
+  bottom: 14px;
+  border-right: 1px solid rgba(242, 240, 234, 0.18);
+  border-bottom: 1px solid rgba(242, 240, 234, 0.18);
 }
 
 .perception-layer {
+  --view-opacity: 0;
+  --view-x: 0px;
+  --view-y: 0px;
+  --view-scale: 1;
+  --view-blur: 0px;
+  --view-clip: 100%;
   position: absolute;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(242, 240, 234, 0.06);
-  color: var(--text-muted);
-  opacity: 0.12;
-  transition: opacity 500ms ease-out;
+  inset: 0;
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  opacity: var(--view-opacity);
+  transform: translate3d(var(--view-x), var(--view-y), 0) scale(var(--view-scale));
+  filter: blur(var(--view-blur));
+  transform-origin: center;
+  will-change: transform, opacity, filter, clip-path;
 }
 
-.perception-layer--rgb { inset: 9% 8%; }
-.perception-layer--depth { inset: 11% 10%; }
-.perception-layer--lidar { inset: 13% 12%; }
-.perception-layer--thermal { inset: 15% 14%; }
-.perception-layer--environment { inset: 17% 16%; }
-
-.perception-layer span {
-  padding: 8px;
-  color: var(--text-muted);
-  font-size: 9px;
-  letter-spacing: 0.12em;
-  line-height: 1;
-  text-align: center;
+.perception-layer--rgb,
+.perception-layer--lidar {
+  clip-path: inset(0 var(--view-clip) 0 0);
 }
 
-.perception-viewport[data-active-view="rgb"] .perception-layer--rgb,
-.perception-viewport[data-active-view="depth"] .perception-layer--depth,
-.perception-viewport[data-active-view="lidar"] .perception-layer--lidar,
-.perception-viewport[data-active-view="thermal"] .perception-layer--thermal,
-.perception-viewport[data-active-view="environment"] .perception-layer--environment {
-  border-color: rgba(242, 240, 234, 0.16);
-  opacity: 1;
+.perception-layer--depth,
+.perception-layer--map {
+  clip-path: inset(0 0 0 var(--view-clip));
+}
+
+.perception-layer--rgb {
+  filter: grayscale(calc(var(--perception-progress) * 115%)) blur(var(--view-blur));
+}
+
+.perception-layer img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.perception-layer--map::after {
+  position: absolute;
+  inset: 8%;
+  border: 1px solid rgba(242, 240, 234, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(17, 17, 15, 0.38);
+  pointer-events: none;
+  content: "";
 }
 
 .perception-stage-state {
   position: absolute;
   right: 5%;
   bottom: 5%;
-  z-index: 2;
+  z-index: 4;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 7px;
   text-align: right;
+  text-shadow: 0 1px 10px rgba(17, 17, 15, 0.72);
 }
 
 .perception-stage-state strong {
@@ -138,7 +180,7 @@
 
 .perception-stage-state span,
 .perception-stage-state i {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: 9px;
   font-style: normal;
   letter-spacing: 0.12em;
@@ -148,7 +190,7 @@
 .perception-stage-annotation {
   position: absolute;
   top: calc(85vh + 12px);
-  right: 8vw;
+  right: 13vw;
   z-index: 2;
   margin: 0;
   color: var(--text-muted);
@@ -292,7 +334,6 @@
   .perception-copy h2 { font-size: clamp(38px, 11vw, 58px); }
   .perception-copy p { max-width: 310px; font-size: 13px; }
   .perception-stage { top: 43vh; right: auto; left: 5vw; width: 90vw; height: 40vh; }
-  .perception-layer span { max-width: 90%; }
   .perception-stage-state { right: 5%; bottom: 7%; }
   .perception-stage-annotation { top: calc(83vh + 12px); right: 5vw; }
   .perception-current-view { bottom: 72px; left: 20px; }

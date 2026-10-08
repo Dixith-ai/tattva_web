@@ -47,3 +47,12 @@ h1 {
 #root {
   min-height: 100svh;
 }
+
+#opening,
+#transformation,
+#inside-the-machine,
+#how-tattva-sees,
+#the-system,
+#conclusion {
+  scroll-margin-top: 84px;
+}

@@ -158,7 +158,10 @@
   height: 82vh;
   opacity: 0;
   animation: model-reveal 1000ms ease-out 350ms forwards;
+  cursor: grab;
 }
+
+.opening-model-stage[data-interacting="true"] { cursor: grabbing; }
 
 .opening-model-stage canvas {
   display: block;
@@ -176,6 +179,34 @@
   opacity: .62;
   transform: translate(-50%, -50%);
 }
+
+.opening-model-provenance {
+  position: absolute;
+  bottom: 7%;
+  left: 4%;
+  z-index: 1;
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  color: var(--text-muted);
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: .14em;
+  line-height: 1.45;
+  pointer-events: none;
+  text-transform: uppercase;
+}
+
+.opening-model-provenance::before {
+  width: 24px;
+  height: 1px;
+  margin-bottom: 2px;
+  background: rgba(242, 240, 234, .2);
+  content: "";
+}
+
+.opening-model-provenance span:last-child { color: rgba(167, 164, 157, .72); }
 
 .opening-scroll-indicator {
   position: absolute;

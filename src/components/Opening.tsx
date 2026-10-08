@@ -1,12 +1,14 @@
+import { lazy, Suspense } from 'react'
 import '../styles/opening.css'
+
+const TattvaHeroModel = lazy(() => import('./TattvaHeroModel').then(({ TattvaHeroModel: HeroModel }) => ({ default: HeroModel })))
 
 export function Opening() {
   return (
     <section className="opening" id="opening" aria-labelledby="opening-title">
-      <div className="opening-model-placeholder" data-asset="tattva-hero-model" aria-label="TATTVA hero model asset pending">
-        {/* TODO: Replace with final TATTVA 3D hero asset. */}
-        <span>[ TATTVA HERO MODEL — ASSET PENDING ]</span>
-      </div>
+      <Suspense fallback={<div className="opening-model-stage" aria-hidden="true"><span className="opening-model-loading" /></div>}>
+        <TattvaHeroModel />
+      </Suspense>
 
       <div className="opening-content">
         <p className="opening-kicker">

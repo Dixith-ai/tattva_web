@@ -40,6 +40,8 @@
   color: var(--text-primary);
 }
 
+.site-mobile-navigation { display: none; }
+
 .site-system-label,
 .opening-kicker,
 .opening-workflow,
@@ -296,17 +298,25 @@
 }
 
 @media (max-width: 900px) {
-  .site-header { padding-right: 24px; padding-left: 24px; }
+  .site-header { position: absolute; display: flex; justify-content: space-between; padding-right: 24px; padding-left: 24px; }
   .site-navigation { display: none; }
-  .site-header { grid-template-columns: 1fr auto; }
+  .site-system-label { display: none; }
+  .site-mobile-navigation { position: relative; z-index: 4; display: block; }
+  .site-mobile-navigation summary { display: flex; align-items: center; min-height: 36px; list-style: none; color: var(--text-secondary); cursor: pointer; font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: 9px; letter-spacing: .16em; }
+  .site-mobile-navigation summary::-webkit-details-marker { display: none; }
+  .site-mobile-navigation summary::before { width: 18px; height: 1px; margin-right: 9px; background: var(--accent); content: ""; }
+  .site-mobile-navigation nav { position: absolute; top: calc(100% + 8px); right: 0; display: grid; min-width: 194px; border: 1px solid var(--border-subtle); padding: 7px 0; background: var(--bg); }
+  .site-mobile-navigation:not([open]) nav { display: none; }
+  .site-mobile-navigation a { display: block; min-height: 40px; padding: 14px 16px; color: var(--text-secondary); font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: 9px; letter-spacing: .11em; line-height: 1.2; }
+  .site-mobile-navigation a:active,
+  .site-mobile-navigation a:focus-visible { color: var(--text-primary); outline: none; }
   .opening-content { bottom: 72px; left: 24px; width: calc(100% - 48px); }
   .opening-model-stage { top: 8vh; right: -4vw; width: 62vw; height: 72vh; opacity: 0.7; }
   .opening-corner-label { right: 24px; }
 }
 
 @media (max-width: 640px) {
-  .site-header { display: block; padding: 20px; }
-  .site-system-label { display: none; }
+  .site-header { display: flex; padding: 20px; }
   .opening-content { right: 20px; bottom: 100px; left: 20px; width: auto; }
   .opening h1 { font-size: clamp(64px, 21vw, 110px); }
   .opening-subtitle { margin-top: 14px; font-size: 10px; }
@@ -317,6 +327,7 @@
   .opening-workflow { margin-top: 11px; font-size: 8px; }
   .opening-micro-label { margin-top: 10px; }
   .opening-model-stage { top: 6vh; right: 5vw; width: 90vw; height: 48vh; opacity: 0.4; }
+  .opening-model-provenance { top: 5%; bottom: auto; left: 3%; font-size: 7px; }
   .opening-corner-label { display: none; }
 }
 

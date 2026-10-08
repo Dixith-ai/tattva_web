@@ -317,7 +317,8 @@
   .inside-callout--propulsion { right: 4%; bottom: 14%; }
   .inside-active-system { right: 4%; bottom: 5%; }
   .inside-machine-index { right: 20px; bottom: 52px; top: auto; gap: 12px; }
-  .inside-machine-index span { font-size: 8px; }
+  .inside-machine-index span { display: none; font-size: 8px; }
+  .inside-machine-index .is-active { display: block; }
   .inside-machine-bottom-label { bottom: 28px; left: 20px; }
   .inside-machine-section-number { right: 20px; bottom: 28px; }
 }

@@ -124,7 +124,8 @@ export function InsideMachineCad({ progressRef }: { progressRef: MutableRefObjec
     let isDisposed = false
 
     renderer.setClearColor(new Color(0x11110f), 0)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    const isPhone = window.matchMedia('(max-width: 640px)').matches
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isPhone ? 1.25 : 2))
     renderer.outputColorSpace = 'srgb'
     renderer.domElement.setAttribute('aria-hidden', 'true')
     renderer.domElement.style.pointerEvents = 'none'

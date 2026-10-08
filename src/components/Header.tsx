@@ -13,6 +13,17 @@ export function Header() {
         <a href="#conclusion">CONCLUSION</a>
       </nav>
 
+      <details className="site-mobile-navigation">
+        <summary aria-label="Open section navigation">INDEX</summary>
+        <nav aria-label="Mobile section navigation">
+          <a href="#transformation">TRANSFORMATION</a>
+          <a href="#inside-the-machine">INSIDE THE MACHINE</a>
+          <a href="#how-tattva-sees">HOW TATTVA SEES</a>
+          <a href="#the-system">THE SYSTEM</a>
+          <a href="#conclusion">CONCLUSION</a>
+        </nav>
+      </details>
+
       <p className="site-system-label">AIR / GROUND SYSTEM</p>
     </header>
   )

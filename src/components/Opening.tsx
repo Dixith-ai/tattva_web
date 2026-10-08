@@ -13,13 +13,17 @@ export function Opening() {
       <div className="opening-content">
         <p className="opening-kicker">
           <span aria-hidden="true" />
-          01 / TRANSFORMABLE PLATFORM
+          01 / AUTONOMOUS DISASTER RESPONSE
         </p>
         <h1 id="opening-title">TATTVA</h1>
-        <p className="opening-subtitle">Transformable Air–Ground Platform</p>
+        <p className="opening-subtitle">AUTONOMOUS AIR-GROUND RESCUE PLATFORM</p>
         <p className="opening-description">
-          A transformable robotic platform designed to move between aerial and ground operation while sensing, mapping and understanding its environment.
+          Disasters can leave responders facing damaged infrastructure, inaccessible terrain and limited situational awareness. Finding survivors, identifying hazards and deciding where to act first can become slow, dangerous and uncertain.
         </p>
+        <p className="opening-solution">
+          TATTVA addresses this by autonomously surveying affected areas, detecting survivors and hazards with on-device AI, and transforming between aerial and ground operation to investigate critical areas and deliver actionable intelligence to rescue teams.
+        </p>
+        <p className="opening-workflow">DISCOVER&nbsp; / &nbsp;VALIDATE&nbsp; / &nbsp;PRIORITIZE</p>
         <p className="opening-micro-label">ENVIRONMENTAL INTELLIGENCE / 01</p>
       </div>
 

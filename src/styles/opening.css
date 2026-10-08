@@ -42,6 +42,7 @@
 
 .site-system-label,
 .opening-kicker,
+.opening-workflow,
 .opening-micro-label,
 .opening-corner-label,
 .opening-scroll-indicator {
@@ -81,9 +82,9 @@
 .opening-content {
   position: absolute;
   z-index: 1;
-  bottom: 96px;
+  bottom: 72px;
   left: 42px;
-  width: min(520px, 42vw);
+  width: min(470px, 38vw);
 }
 
 .opening-kicker {
@@ -119,31 +120,54 @@
 }
 
 .opening-subtitle {
-  margin-top: 26px;
+  margin-top: 20px;
   color: var(--text-secondary);
-  font-size: 17px;
+  font-size: 12px;
   font-weight: 400;
-  letter-spacing: -0.01em;
-  line-height: 1.4;
+  letter-spacing: 0.11em;
+  line-height: 1.35;
   opacity: 0;
   transform: translateY(8px);
   animation: subtitle-reveal 650ms ease-out 500ms forwards;
 }
 
 .opening-description {
-  max-width: 420px;
-  margin-top: 20px;
+  max-width: 460px;
+  margin-top: 16px;
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 400;
-  line-height: 1.65;
+  line-height: 1.55;
   opacity: 0;
   transform: translateY(8px);
   animation: description-reveal 650ms ease-out 620ms forwards;
 }
 
+.opening-solution {
+  max-width: 460px;
+  margin: 12px 0 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.55;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: description-reveal 650ms ease-out 710ms forwards;
+}
+
+.opening-workflow {
+  margin: 18px 0 0;
+  color: var(--accent);
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  line-height: 1;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: description-reveal 650ms ease-out 800ms forwards;
+}
+
 .opening-micro-label {
-  margin-top: 42px;
+  margin-top: 18px;
   color: var(--text-muted);
   font-size: 9px;
   letter-spacing: 0.14em;
@@ -283,10 +307,15 @@
 @media (max-width: 640px) {
   .site-header { display: block; padding: 20px; }
   .site-system-label { display: none; }
-  .opening-content { right: 20px; bottom: 72px; left: 20px; width: auto; }
+  .opening-content { right: 20px; bottom: 100px; left: 20px; width: auto; }
   .opening h1 { font-size: clamp(64px, 21vw, 110px); }
-  .opening-subtitle { font-size: 15px; }
-  .opening-description { max-width: 340px; font-size: 13px; }
+  .opening-subtitle { margin-top: 14px; font-size: 10px; }
+  .opening-description,
+  .opening-solution { max-width: 340px; font-size: 10.5px; line-height: 1.35; }
+  .opening-description { margin-top: 12px; }
+  .opening-solution { margin-top: 9px; }
+  .opening-workflow { margin-top: 11px; font-size: 8px; }
+  .opening-micro-label { margin-top: 10px; }
   .opening-model-stage { top: 6vh; right: 5vw; width: 90vw; height: 48vh; opacity: 0.4; }
   .opening-corner-label { display: none; }
 }
@@ -297,6 +326,8 @@
   .opening h1,
   .opening-subtitle,
   .opening-description,
+  .opening-solution,
+  .opening-workflow,
   .opening-model-stage {
     opacity: 1;
     transform: none;

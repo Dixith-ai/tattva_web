@@ -79,68 +79,26 @@
   z-index: 1;
 }
 
-.transformation-placeholder {
+.transformation-model-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.transformation-model-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.transformation-model-loading {
   position: absolute;
   top: 50%;
   left: 55%;
-  display: grid;
-  width: 56%;
-  height: 48%;
-  place-items: center;
-  border: 1px solid rgba(242, 240, 234, 0.06);
-  color: var(--text-muted);
-  opacity: 0.64;
-  transform: translate(-50%, -50%) scaleX(0.82) scaleY(1.12);
-  transition: transform 420ms ease, opacity 320ms ease;
-}
-
-.transformation-placeholder::before,
-.transformation-placeholder::after {
-  position: absolute;
-  border: 1px solid rgba(242, 240, 234, 0.05);
-  content: "";
-  transition: inset 420ms ease, opacity 320ms ease;
-}
-
-.transformation-placeholder::before {
-  inset: 14%;
-}
-
-.transformation-placeholder::after {
-  inset: 29% 9%;
-  opacity: 0.55;
-}
-
-.transformation-placeholder span {
-  z-index: 1;
-  padding: 8px;
-  color: var(--text-muted);
-  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 9px;
-  letter-spacing: 0.12em;
-  text-align: center;
-}
-
-.transformation-viewport[data-state="transforming"] .transformation-placeholder {
-  opacity: 0.78;
-  transform: translate(-50%, -50%) scale(0.94);
-}
-
-.transformation-viewport[data-state="transforming"] .transformation-placeholder::before {
-  inset: 20%;
-}
-
-.transformation-viewport[data-state="ground"] .transformation-placeholder {
-  opacity: 0.68;
-  transform: translate(-50%, -50%) scaleX(1.14) scaleY(0.72);
-}
-
-.transformation-viewport[data-state="ground"] .transformation-placeholder::before {
-  inset: 25% 12%;
-}
-
-.transformation-viewport[data-state="ground"] .transformation-placeholder::after {
-  inset: 34% 7%;
+  width: 18px;
+  height: 1px;
+  background: var(--accent);
+  opacity: .62;
+  transform: translate(-50%, -50%);
 }
 
 .transformation-state-label {
@@ -172,6 +130,7 @@
 }
 
 .transformation-viewport[data-state="aerial"] .transformation-state-label--aerial,
+.transformation-viewport[data-state="mechanism"] .transformation-state-label--mechanism,
 .transformation-viewport[data-state="transforming"] .transformation-state-label--transforming,
 .transformation-viewport[data-state="ground"] .transformation-state-label--ground {
   opacity: 1;
@@ -265,7 +224,6 @@
   .transformation-copy h2 { font-size: clamp(42px, 13vw, 64px); }
   .transformation-copy p { max-width: 300px; font-size: 13px; }
   .transformation-stage { top: 38vh; right: auto; left: 5vw; width: 90vw; height: 48vh; opacity: 0.76; }
-  .transformation-placeholder { left: 53%; width: 74%; height: 58%; }
   .transformation-state-label { top: 8%; left: 6%; }
   .transformation-annotation { right: 6%; bottom: 62px; }
   .transformation-current-state { right: 6%; bottom: 32px; font-size: 9px; }
@@ -275,9 +233,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .transformation-placeholder,
-  .transformation-placeholder::before,
-  .transformation-placeholder::after,
   .transformation-state-label {
     transition: none;
   }

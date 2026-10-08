@@ -1,11 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import '../styles/transformation.css'
 
-type TransformationState = 'aerial' | 'transforming' | 'ground'
+const TattvaTransformationModel = lazy(() => import('./TattvaTransformationModel').then(({ TattvaTransformationModel: TransformationModel }) => ({ default: TransformationModel })))
+
+type TransformationState = 'aerial' | 'mechanism' | 'transforming' | 'ground'
 
 function getTransformationState(progress: number): TransformationState {
-  if (progress < 0.35) return 'aerial'
-  if (progress < 0.65) return 'transforming'
+  if (progress < 0.28) return 'aerial'
+  if (progress < 0.5) return 'mechanism'
+  if (progress < 0.75) return 'transforming'
   return 'ground'
 }
 
@@ -13,7 +16,30 @@ export function Transformation() {
   const sectionRef = useRef<HTMLElement>(null)
   const viewportRef = useRef<HTMLDivElement>(null)
   const progressFillRef = useRef<HTMLSpanElement>(null)
+  const progressRef = useRef(0)
   const [state, setState] = useState<TransformationState>('aerial')
+  const [shouldLoadModel, setShouldLoadModel] = useState(false)
+
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section || !('IntersectionObserver' in window)) {
+      setShouldLoadModel(true)
+      return undefined
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoadModel(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '600px 0px' },
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     let frameId = 0
@@ -31,6 +57,7 @@ export function Transformation() {
       const scrollDistance = Math.max(section.offsetHeight - window.innerHeight, 1)
       const progress = Math.min(Math.max(-rect.top / scrollDistance, 0), 1)
 
+      progressRef.current = progress
       viewport.style.setProperty('--transformation-progress', progress.toFixed(4))
       progressFill.style.transform = `scaleY(${progress})`
 
@@ -55,7 +82,8 @@ export function Transformation() {
 
   const currentStateLabel = {
     aerial: 'AERIAL CONFIGURATION',
-    transforming: 'TRANSFORMING',
+    mechanism: 'TRANSFORMATION MECHANISM',
+    transforming: 'MECHANICAL RECONFIGURATION',
     ground: 'GROUND CONFIGURATION',
   }[state]
 
@@ -74,18 +102,24 @@ export function Transformation() {
           </p>
         </div>
 
-        <div className="transformation-stage" data-asset="tattva-transformation-model" aria-label="TATTVA transformation asset pending">
-          {/* TODO: Replace with final TATTVA transformation 3D asset. */}
+        <div className="transformation-stage">
           {/* STATE 1: AERIAL CONFIGURATION */}
-          {/* STATE 2: TRANSFORMATION */}
-          {/* STATE 3: GROUND CONFIGURATION */}
-          <div className="transformation-placeholder" aria-hidden="true">
-            <span>[ TATTVA TRANSFORMATION ASSET — PENDING ]</span>
-          </div>
+          {/* STATE 2: TRANSFORMATION MECHANISM */}
+          {/* STATE 3: MECHANICAL RECONFIGURATION */}
+          {/* STATE 4: GROUND CONFIGURATION */}
+          {shouldLoadModel ? (
+            <Suspense fallback={<div className="transformation-model-canvas" aria-hidden="true"><span className="transformation-model-loading" /></div>}>
+              <TattvaTransformationModel progressRef={progressRef} />
+            </Suspense>
+          ) : <div className="transformation-model-canvas" aria-hidden="true"><span className="transformation-model-loading" /></div>}
 
           <div className="transformation-state-label transformation-state-label--aerial">
             <strong>AERIAL</strong>
             <span>FLIGHT CONFIGURATION</span>
+          </div>
+          <div className="transformation-state-label transformation-state-label--mechanism">
+            <strong>MECHANISM</strong>
+            <span>TRANSFORMATION MECHANISM</span>
           </div>
           <div className="transformation-state-label transformation-state-label--transforming">
             <strong>TRANSFORMATION</strong>
